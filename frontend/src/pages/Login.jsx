@@ -29,7 +29,29 @@ export default function Login() {
         setError(response.data.message || "Login failed");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed. Please try again.");
+      // Handle Django validation errors
+      if (err.response?.data?.message) {
+        if (typeof err.response.data.message === 'string') {
+          setError(err.response.data.message);
+        } else if (typeof err.response.data.message === 'object') {
+          const errors = Object.entries(err.response.data.message)
+            .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
+            .join('; ');
+          setError(errors);
+        }
+      } else if (err.response?.data) {
+        const errorData = err.response.data;
+        if (typeof errorData === 'object' && !errorData.status) {
+          const errors = Object.entries(errorData)
+            .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
+            .join('; ');
+          setError(errors || "Login failed.");
+        } else {
+          setError("Login failed.");
+        }
+      } else {
+        setError("Login failed. Please try again.");
+      }
     }
   };
 

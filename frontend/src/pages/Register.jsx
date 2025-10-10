@@ -21,7 +21,32 @@ export default function Register() {
         setError(response.data.message || "Registration failed.");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed.");
+      // Handle Django validation errors (returns object with field errors)
+      if (err.response?.data?.message) {
+        // If there's a message field, use it
+        if (typeof err.response.data.message === 'string') {
+          setError(err.response.data.message);
+        } else if (typeof err.response.data.message === 'object') {
+          // Format validation errors
+          const errors = Object.entries(err.response.data.message)
+            .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
+            .join('; ');
+          setError(errors);
+        }
+      } else if (err.response?.data) {
+        // Handle direct validation error object
+        const errorData = err.response.data;
+        if (typeof errorData === 'object' && !errorData.status) {
+          const errors = Object.entries(errorData)
+            .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
+            .join('; ');
+          setError(errors || "Registration failed.");
+        } else {
+          setError("Registration failed.");
+        }
+      } else {
+        setError("Registration failed. Please try again.");
+      }
     }
   };
 
