@@ -43,9 +43,10 @@ uploads/*
 !uploads/.gitkeep
 
 # Database
-*.sql
 *.sqlite
 *.db
+# Allow schema.sql for deployment
+!backend/schema.sql
 
 # PHP
 composer.phar
