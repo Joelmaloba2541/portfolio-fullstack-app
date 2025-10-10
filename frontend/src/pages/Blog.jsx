@@ -33,7 +33,13 @@ export default function Blog() {
       setLoading(true);
       const res = await axiosInstance.get("/posts");
       const apiPosts = Array.isArray(res.data?.data) ? res.data.data : [];
-      setPosts(apiPosts);
+      // Normalize posts data to ensure arrays exist
+      const normalizedPosts = apiPosts.map(post => ({
+        ...post,
+        comments: Array.isArray(post.comments) ? post.comments : [],
+        tags: Array.isArray(post.tags) ? post.tags : []
+      }));
+      setPosts(normalizedPosts);
     } catch (err) {
       console.error("Failed to fetch posts:", err);
       setPosts([]);

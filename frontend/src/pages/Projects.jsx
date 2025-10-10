@@ -12,7 +12,13 @@ export default function Projects() {
   const fetchProjects = async () => {
     try {
       const res = await axiosInstance.get('/projects');
-      setProjects(Array.isArray(res.data.data) ? res.data.data : []);
+      const projectsData = Array.isArray(res.data?.data) ? res.data.data : [];
+      // Ensure tags is always an array
+      const normalizedProjects = projectsData.map(project => ({
+        ...project,
+        tags: Array.isArray(project.tags) ? project.tags : []
+      }));
+      setProjects(normalizedProjects);
     } catch (error) {
       console.error('Error fetching projects:', error);
       setProjects([]);

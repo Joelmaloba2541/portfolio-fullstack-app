@@ -59,9 +59,15 @@ export default function BlogPost() {
       setLoading(true);
       const res = await axiosInstance.get(`/posts?id=${id}`);
       const p = res.data.data;
-      setPost(p);
+      // Normalize post data
+      const normalizedPost = {
+        ...p,
+        comments: Array.isArray(p.comments) ? p.comments : [],
+        tags: Array.isArray(p.tags) ? p.tags : []
+      };
+      setPost(normalizedPost);
       setLikeCount(p.likes || 0);
-      setCommentCount(p.comments?.length || 0);
+      setCommentCount(normalizedPost.comments.length);
       
       if (user) {
         // Check if user has liked this post
