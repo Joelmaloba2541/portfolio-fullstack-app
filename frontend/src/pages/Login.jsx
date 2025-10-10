@@ -13,7 +13,7 @@ export default function Login() {
     setError("");
     
     try {
-      const response = await axiosInstance.post('auth?action=login', {
+      const response = await axiosInstance.post('/auth/login', {
         username,
         password
       });

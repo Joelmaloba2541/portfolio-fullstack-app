@@ -12,7 +12,7 @@ export default function AdminLogin() {
     e.preventDefault();
     setError("");
     try {
-      const res = await axiosInstance.post("/auth?action=login", {
+      const res = await axiosInstance.post("/auth/login", {
         username: identifier,
         password,
       });

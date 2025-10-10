@@ -13,7 +13,7 @@ export default function Register() {
     setError("");
     setSuccess("");
     try {
-      const response = await axiosInstance.post("auth?action=register", { username, email, password });
+      const response = await axiosInstance.post("/auth/register", { username, email, password });
       if (response.data.status === 'success') {
         setSuccess(response.data.message || "Registration successful! You can now log in.");
         setUsername(""); setEmail(""); setPassword("");
