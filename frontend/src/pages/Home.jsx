@@ -14,14 +14,22 @@ export default function Home() {
     axiosInstance
       .get("/projects") // base URL set in axiosConfig.js
       .then((res) => {
-        const data = Array.isArray(res.data) ? res.data : res.data.projects || [];
-        setProjects(data);
+        // Django API returns data in res.data.data
+        const data = Array.isArray(res.data?.data) ? res.data.data : [];
+        // Normalize projects to ensure tags is always an array
+        const normalizedProjects = data.map(project => ({
+          ...project,
+          tags: Array.isArray(project.tags) ? project.tags : []
+        }));
+        setProjects(normalizedProjects);
 
-        const allTags = Array.from(new Set(data.flatMap((p) => p.tags || [])));
+        const allTags = Array.from(new Set(normalizedProjects.flatMap((p) => p.tags)));
         setTags(allTags);
       })
-      .catch(() => {
-        console.warn("Backend API not reachable");
+      .catch((err) => {
+        console.warn("Backend API not reachable:", err);
+        setProjects([]);
+        setTags([]);
       });
   }, []);
 

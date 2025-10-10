@@ -80,9 +80,9 @@ export default function AdminDashboard() {
       const projectsRes = await axiosInstance.get("/projects");
       const usersRes = await axiosInstance.get(`auth?action=users&user_id=${user.id}`);
       setAnalytics({
-        totalPosts: postsRes.data.data.length,
-        totalProjects: projectsRes.data.data.length,
-        totalUsers: usersRes.data.users.length,
+        totalPosts: Array.isArray(postsRes.data?.data) ? postsRes.data.data.length : 0,
+        totalProjects: Array.isArray(projectsRes.data?.data) ? projectsRes.data.data.length : 0,
+        totalUsers: Array.isArray(usersRes.data?.users) ? usersRes.data.users.length : 0,
         totalComments: 0,
       });
     } catch (error) {
