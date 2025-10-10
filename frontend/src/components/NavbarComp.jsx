@@ -46,12 +46,15 @@ export default function NavbarComp() {
   useEffect(() => {
     const fetchOnlineUsers = async () => {
       try {
-        const response = await axiosInstance.get('online_users?action=online_users');
+        const response = await axiosInstance.get('online_users');
         if (response.data.status === 'success') {
-          setOnlineUsers(response.data.users);
+          // Django API returns data in response.data.data
+          const users = Array.isArray(response.data?.data) ? response.data.data : [];
+          setOnlineUsers(users);
         }
       } catch (error) {
         console.error('Error fetching online users:', error);
+        setOnlineUsers([]); // Set empty array on error
       }
     };
 
