@@ -1,9 +1,9 @@
 services:
   - type: web
     name: portfolio-backend-django
-    env: python
+    runtime: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn portfolio.wsgi:application"
+    startCommand: "gunicorn portfolio.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -17,6 +17,8 @@ services:
         value: .onrender.com
       - key: CORS_ALLOWED_ORIGINS
         sync: false
+      - key: PYTHON_VERSION
+        value: 3.11.0
 
 databases:
   - name: portfolio-db
