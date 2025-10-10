@@ -1,0 +1,2 @@
+- [x] Update AdminDashboard.jsx to use consistent admin flag naming (is_admin instead of isAdmin)
+- [x] Test admin login to verify navbar shows admin dashboard link

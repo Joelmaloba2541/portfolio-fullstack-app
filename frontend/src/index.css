@@ -1,0 +1,115 @@
+/* src/index.css */
+:root {
+  --bg: #fff;
+  --text: #000;
+}
+
+[data-theme="dark"] {
+  --bg: #0b1220;
+  --text: #e6eef8;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Add animation keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animation classes */
+.animate-fade-in {
+  animation: fadeIn 1s ease-out forwards;
+}
+
+.card-animate { 
+  transform-origin: center; 
+}
+
+/* Hero section styles */
+.hero {
+  background: linear-gradient(to right, rgba(var(--bs-light-rgb), 0.95), rgba(var(--bs-light-rgb), 0.9));
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .hero {
+  background: linear-gradient(to right, rgba(var(--bs-dark-rgb), 0.95), rgba(var(--bs-dark-rgb), 0.9));
+}
+
+/* Navigation and button effects */
+.btn, .nav-link {
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(var(--bs-dark-rgb), 0.1);
+}
+
+.hover-primary:hover {
+  color: var(--bs-primary) !important;
+}
+
+/* Navbar styles */
+.navbar {
+  transition: all 0.3s ease;
+  background: rgba(var(--bs-light-rgb), 0.95);
+  backdrop-filter: blur(8px);
+}
+
+[data-bs-theme="dark"] .navbar {
+  background: rgba(var(--bs-dark-rgb), 0.95);
+}
+
+.nav-link {
+  position: relative;
+  padding: 0.5rem 1rem;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: var(--bs-primary);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* Footer styles */
+.footer {
+  background: var(--bg);
+  border-top: 1px solid rgba(var(--bs-secondary-rgb), 0.1);
+}
+
+.footer .btn-outline-secondary {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.footer .btn-outline-secondary:hover {
+  transform: translateY(-3px);
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+  color: white;
+}
