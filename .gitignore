@@ -2,11 +2,23 @@
 node_modules/
 vendor/
 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+backend_python/venv/
+backend_python/env/
+backend_python/ENV/
+backend_python/.venv
+
 # Environment variables
 .env
 .env.local
 .env.production
 backend/.env
+backend_python/.env
 
 # Build outputs
 frontend/dist/

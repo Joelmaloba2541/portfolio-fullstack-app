@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost/portfolio-php-app/backend",
-  withCredentials: false, // Set to false for InfinityFree compatibility
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000",
+  withCredentials: true, // Enable credentials for Django session auth
   headers: {
     'Content-Type': 'application/json',
   }
