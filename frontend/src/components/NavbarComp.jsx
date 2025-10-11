@@ -83,7 +83,18 @@ export default function NavbarComp() {
     }`} role="navigation" aria-label="Main navigation">
       <div className="container">
         <Link className="navbar-brand fw-bold d-flex align-items-center" to="/">
-          <span className="text-gradient">JM</span>
+          <img 
+            src="/logo.png" 
+            alt="Joel Maloba Logo" 
+            className="me-2"
+            style={{ height: '40px', width: 'auto', objectFit: 'contain' }}
+            onError={(e) => {
+              // Fallback to text if logo doesn't exist
+              e.target.style.display = 'none';
+              e.target.nextElementSibling.style.display = 'inline';
+            }}
+          />
+          <span className="text-gradient" style={{ display: 'none' }}>JM</span>
           <span className="d-none d-sm-inline ms-2 text-gradient">Joel Maloba</span>
         </Link>
         

@@ -52,6 +52,23 @@ export default function Home() {
       </div>
       {/* Hero Section */}
       <section className="text-center py-5">
+        <div className="mb-4">
+          <img 
+            src="/profile-logo.png" 
+            alt="Joel Maloba" 
+            className="rounded-circle shadow-lg mb-3"
+            style={{ 
+              width: '150px', 
+              height: '150px', 
+              objectFit: 'cover',
+              border: '4px solid var(--bs-primary)'
+            }}
+            onError={(e) => {
+              // Fallback to emoji if image doesn't exist
+              e.target.style.display = 'none';
+            }}
+          />
+        </div>
         <h1 className="display-4 fw-bold mb-2">👋 Hi, I’m Wanjala Joel Maloba Wangila</h1>
         <h2 className="h3 mb-3">💻 Full-Stack Developer</h2>
         <p className="lead mb-4">Building scalable digital solutions that merge creativity with clean code.</p>
