@@ -54,7 +54,7 @@ export default function Home() {
       <section className="text-center py-5">
         <div className="mb-4">
           <img 
-            src="/profile-logo.png" 
+            src="/logo.png" 
             alt="Joel Maloba" 
             className="rounded-circle shadow-lg mb-3"
             style={{ 

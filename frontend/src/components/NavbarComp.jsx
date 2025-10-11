@@ -84,7 +84,7 @@ export default function NavbarComp() {
       <div className="container">
         <Link className="navbar-brand fw-bold d-flex align-items-center" to="/">
           <img 
-            src="/logo.png" 
+            src="/profile-logo.png" 
             alt="Joel Maloba Logo" 
             className="me-2"
             style={{ height: '40px', width: 'auto', objectFit: 'contain' }}
