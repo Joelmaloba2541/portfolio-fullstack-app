@@ -19,6 +19,7 @@ urlpatterns = [
     path('analytics', views.analytics_view, name='analytics'),
     path('activity', views.activity_view, name='activity'),
     path('online_users', views.online_users_view, name='online-users'),
+    path('database-info', views.database_info_view, name='database-info'),
     
     # Router URLs
     path('', include(router.urls)),

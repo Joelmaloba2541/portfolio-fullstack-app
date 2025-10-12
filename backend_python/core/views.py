@@ -360,3 +360,34 @@ def online_users_view(request):
         'status': 'success',
         'data': serializer.data
     })
+
+
+@api_view(['GET'])
+def database_info_view(request):
+    """Get database connection information"""
+    from django.db import connection
+    
+    db_engine = connection.settings_dict['ENGINE']
+    db_name = connection.settings_dict['NAME']
+    db_host = connection.settings_dict.get('HOST', 'N/A')
+    
+    # Determine database type
+    if 'postgresql' in db_engine:
+        db_type = 'PostgreSQL'
+    elif 'sqlite' in db_engine:
+        db_type = 'SQLite'
+    elif 'mysql' in db_engine:
+        db_type = 'MySQL'
+    else:
+        db_type = 'Unknown'
+    
+    return Response({
+        'status': 'success',
+        'database': {
+            'type': db_type,
+            'engine': db_engine,
+            'name': db_name,
+            'host': db_host,
+            'is_postgresql': 'postgresql' in db_engine
+        }
+    })
