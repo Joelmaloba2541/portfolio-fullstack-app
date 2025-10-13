@@ -1,17 +1,17 @@
 # Quick Deploy Guide
 
-## ✅ Backend Status: LIVE
+## Backend Status: LIVE
 **URL**: https://portfolio-python1-app.onrender.com
 
 ---
 
-## 🚀 Deploy Frontend Now
+## Deploy Frontend Now
 
 ### Copy-Paste Settings for Render:
 
 1. **Go to**: https://dashboard.render.com/
 2. **Click**: New + → Static Site
-3. **Select**: `portfolio-php-app` repository
+3. **Select**: `portfolio-fullstack-app` repository
 
 ### Build Settings:
 ```
@@ -31,7 +31,7 @@ Value: https://portfolio-python1-app.onrender.com
 
 ---
 
-## 📝 After Frontend Deploys
+## After Frontend Deploys
 
 You'll get a URL like: `https://portfolio-frontend-xxxx.onrender.com`
 
@@ -48,19 +48,19 @@ You'll get a URL like: `https://portfolio-frontend-xxxx.onrender.com`
 
 ---
 
-## 🎯 That's It!
+## That's It!
 
 Your portfolio will be fully live with:
-- ✅ Django REST API backend
-- ✅ React frontend
-- ✅ PostgreSQL database
-- ✅ Auto-deployment from GitHub
-- ✅ Free SSL (HTTPS)
-- ✅ Admin panel at `/admin/`
+- Django REST API backend
+- React frontend
+- PostgreSQL database
+- Auto-deployment from GitHub
+- Free SSL (HTTPS)
+- Admin panel at `/admin/`
 
 ---
 
-## 🔑 Admin Access
+## Admin Access
 
 **URL**: https://portfolio-python1-app.onrender.com/admin/
 
@@ -68,7 +68,7 @@ Your portfolio will be fully live with:
 - Username: `admin`
 - Password: `admin`
 
-⚠️ **Change password immediately after first login!**
+ **Change password immediately after first login!**
 
 ---
 

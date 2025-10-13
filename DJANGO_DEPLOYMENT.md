@@ -51,7 +51,7 @@ Code is already in the repository under `backend_python/` directory.
 
 1. Go to [Render Dashboard](https://dashboard.render.com/)
 2. Click **"New +"** → **"Web Service"**
-3. Connect your GitHub repository: `portfolio-php-app`
+3. Connect your GitHub repository: `portfolio-fullstack-app`
 4. Configure:
    - **Name**: `portfolio-backend-django`
    - **Root Directory**: `backend_python`

@@ -72,14 +72,23 @@ php backend/db_setup.php
 
 ## 🌐 Deployment
 
+### Backend (Django/Render)
+The backend is built with **Django** and deployed on **Render**.
+
+**Database Options:**
+- **Aiven PostgreSQL** (Recommended) - No expiration, free tier
+  - See [AIVEN_DATABASE_SETUP.md](./AIVEN_DATABASE_SETUP.md)
+- **Render PostgreSQL** - 90-day expiration, free tier
+  - See [RENDER_DATABASE_SETUP.md](./RENDER_DATABASE_SETUP.md)
+
+**Deployment:**
+- Build command: `./backend_python/build.sh`
+- Start command: `gunicorn portfolio.wsgi:application`
+- Environment variables: `DATABASE_URL`, `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`
+
 ### Frontend (Render)
 - Build command: `npm run build`
 - Publish directory: `dist`
-
-### Backend (InfinityFree/cPanel)
-- Upload `backend` directory contents
-- Configure database credentials
-- Ensure `.htaccess` is properly configured
 
 ## 📝 Environment Variables
 

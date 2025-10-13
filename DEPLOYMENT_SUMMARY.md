@@ -23,7 +23,7 @@
 - ✅ Online users tracking
 
 ### 3. Code Pushed to GitHub
-- ✅ Repository: https://github.com/Joelmaloba2541/portfolio-php-app
+- ✅ Repository: https://github.com/Joelmaloba2541/portfolio-fullstack-app
 - ✅ All files committed and pushed
 - ✅ Ready for deployment
 
@@ -36,7 +36,7 @@
 1. **Go to Render Dashboard**: https://dashboard.render.com/
 2. **Create New Web Service**:
    - Click "New +" → "Web Service"
-   - Connect GitHub repository: `portfolio-php-app`
+   - Connect GitHub repository: `portfolio-fullstack-app`
    - **Root Directory**: `backend_python`
    - **Environment**: Python 3
    - **Build Command**: `./build.sh`
@@ -55,7 +55,7 @@
 1. **Go to Render Dashboard**
 2. **Create New Static Site**:
    - Click "New +" → "Static Site"
-   - Select repository: `portfolio-php-app`
+   - Select repository: `portfolio-fullstack-app`
    - **Root Directory**: `frontend`
    - **Build Command**: `npm install && npm run build`
    - **Publish Directory**: `frontend/dist`
@@ -179,13 +179,14 @@ After deployment, test:
 
 ---
 
-## 🎉 You're All Set!
+## You're All Set!
 
-Your portfolio app is now ready for production with:
-- ✅ Modern Django REST API backend
-- ✅ React frontend
-- ✅ Auto-deployment pipeline
-- ✅ Professional admin panel
-- ✅ All features working
+Your portfolio-fullstack-app is now ready for production with:
+- Modern Django REST API backend
+- React frontend
+- Auto-deployment pipeline
+- Professional admin panel
+- All features working
 
+**Happy deploying! **
 **Happy deploying! 🚀**

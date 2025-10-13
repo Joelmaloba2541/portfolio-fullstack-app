@@ -13,7 +13,7 @@ https://portfolio-python1-app.onrender.com
 
 1. Go to https://dashboard.render.com/
 2. Click **"New +"** → **"Static Site"**
-3. Connect your GitHub repository: `portfolio-php-app`
+3. Connect your GitHub repository: `portfolio-fullstack-app`
 
 ### Step 2: Configure Build Settings
 

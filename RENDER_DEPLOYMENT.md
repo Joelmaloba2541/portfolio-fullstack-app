@@ -3,7 +3,7 @@
 ## Step-by-Step Instructions
 
 ### 1. Prepare Your Repository
-✅ Already done - Your code is on GitHub at: https://github.com/Joelmaloba2541/portfolio-php-app
+✅ Already done - Your code is on GitHub at: https://github.com/Joelmaloba2541/portfolio-fullstack-app
 
 ### 2. Sign Up / Log In to Render
 1. Go to https://render.com
@@ -13,7 +13,7 @@
 1. Click **"New +"** button in the top right
 2. Select **"Static Site"**
 3. Connect your GitHub account if not already connected
-4. Select the repository: **portfolio-php-app**
+4. Select the repository: **portfolio-fullstack-app**
 
 ### 4. Configure Build Settings
 Fill in the following:
@@ -28,7 +28,7 @@ Click **"Advanced"** and add:
 
 - **Key**: `VITE_API_URL`
 - **Value**: Your backend URL (you'll update this after deploying backend)
-  - For now, use: `http://localhost/portfolio-php-app/backend`
+  - For now, use: `http://localhost/portfolio-fullstack-app/backend`
   - Later update to: `https://your-infinityfree-domain.com` or your actual backend URL
 
 ### 6. Deploy
