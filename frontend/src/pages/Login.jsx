@@ -5,6 +5,9 @@ import axiosInstance from "../axiosConfig";
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(() => {
+    return localStorage.getItem("remember_me") === "true";
+  });
   const [error, setError] = useState("");
   const nav = useNavigate();
 
@@ -15,11 +18,13 @@ export default function Login() {
     try {
       const response = await axiosInstance.post('/auth/login', {
         username,
-        password
+        password,
+        remember_me: rememberMe,
       });
       
       if (response.data.status === 'success') {
         localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem("remember_me", rememberMe ? "true" : "false");
         if (response.data.user.is_admin) {
           nav("/admin/dashboard");
         } else {
@@ -87,6 +92,18 @@ export default function Login() {
               placeholder="Enter your password"
               required
             />
+          </div>
+          <div className="form-check mb-3">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              id="rememberMe"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+            />
+            <label className="form-check-label" htmlFor="rememberMe">
+              Remember me for 30 days
+            </label>
           </div>
           <button className="btn btn-primary">Login</button>
         </form>

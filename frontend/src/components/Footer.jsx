@@ -1,6 +1,10 @@
 import { Link } from 'react-router-dom';
+import useMenus from '../hooks/useMenus';
 
 function Footer() {
+  const { menus } = useMenus();
+  const footerMenus = menus.footer || [];
+
   return (
     <footer className="footer mt-auto pt-5 bg-dark">
       <div className="container pb-5">
@@ -40,26 +44,40 @@ function Footer() {
           <div className="col-6 col-md-4 col-lg-2">
             <h5 className="h6 mb-3 text-white">Navigation</h5>
             <ul className="list-unstyled">
-              <li className="mb-2">
-                <Link to="/projects" className="text-white-50 text-decoration-none hover-white">
-                  <i className="bi bi-arrow-right me-2"></i>Projects
-                </Link>
-              </li>
-              <li className="mb-2">
-                <Link to="/blog" className="text-white-50 text-decoration-none hover-white">
-                  <i className="bi bi-arrow-right me-2"></i>Blog
-                </Link>
-              </li>
-              <li className="mb-2">
-                <Link to="/about" className="text-white-50 text-decoration-none hover-white">
-                  <i className="bi bi-arrow-right me-2"></i>About
-                </Link>
-              </li>
-              <li className="mb-2">
-                <Link to="/contact" className="text-white-50 text-decoration-none hover-white">
-                  <i className="bi bi-arrow-right me-2"></i>Contact
-                </Link>
-              </li>
+              {(footerMenus.length ? footerMenus : [
+                { id: 'projects', title: 'Projects', url: '/projects', icon: 'bi bi-arrow-right' },
+                { id: 'blog', title: 'Blog', url: '/blog', icon: 'bi bi-arrow-right' },
+                { id: 'about', title: 'About', url: '/about', icon: 'bi bi-arrow-right' },
+                { id: 'contact', title: 'Contact', url: '/contact', icon: 'bi bi-arrow-right' },
+              ]).map((item) => {
+                const isExternal = item.url?.startsWith('http');
+                const iconClass = item.icon || 'bi bi-arrow-right';
+                const content = (
+                  <>
+                    <i className={`${iconClass} me-2`}></i>
+                    {item.title}
+                  </>
+                );
+
+                return (
+                  <li className="mb-2" key={item.id}>
+                    {isExternal ? (
+                      <a
+                        href={item.url}
+                        className="text-white-50 text-decoration-none hover-white"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {content}
+                      </a>
+                    ) : (
+                      <Link to={item.url || '#'} className="text-white-50 text-decoration-none hover-white">
+                        {content}
+                      </Link>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import DarkToggle from "./DarkToggle";
 import axiosInstance from '../axiosConfig';
+import useMenus from "../hooks/useMenus";
 
 function getUser() {
   try {
@@ -19,6 +20,7 @@ export default function NavbarComp() {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState(getUser());
   const location = useLocation();
+  const { menus } = useMenus();
   const isAdmin = currentUser?.is_admin == true; // Check specifically for is_admin flag
 
   // Listen for storage events (when user logs in/out)
@@ -111,37 +113,67 @@ export default function NavbarComp() {
 
         <div className={`${isNavCollapsed ? 'collapse' : ''} navbar-collapse`} id="navbarContent">
           <ul className="navbar-nav mx-auto py-3 py-lg-0">
-            <li className="nav-item">
-              <NavLink className="nav-link px-3" to="/" end>
-                <i className="bi bi-house-door me-2"></i>Home
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink className="nav-link px-3" to="/projects">
-                <i className="bi bi-code-square me-2"></i>Projects
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink className="nav-link px-3" to="/blog">
-                <i className="bi bi-journal-text me-2"></i>Blog
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink className="nav-link px-3" to="/about">
-                <i className="bi bi-person me-2"></i>About
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink className="nav-link px-3" to="/contact">
-                <i className="bi bi-envelope me-2"></i>Contact
-              </NavLink>
-            </li>
-            {isAdmin && (
-              <li className="nav-item">
-                <NavLink className="nav-link px-3" to="/admin/dashboard">
-                  <i className="bi bi-speedometer2 me-2"></i>Admin
-                </NavLink>
-              </li>
+            {menus.header?.length ? (
+              menus.header.map((menu) => {
+                const Icon = menu.icon ? menu.icon : null;
+                const content = (
+                  <>
+                    {Icon ? <i className={`${Icon} me-2`}></i> : null}
+                    {menu.title}
+                  </>
+                );
+                if (menu.url?.startsWith("http")) {
+                  return (
+                    <li className="nav-item" key={menu.id}>
+                      <a className="nav-link px-3" href={menu.url} target="_blank" rel="noopener noreferrer">
+                        {content}
+                      </a>
+                    </li>
+                  );
+                }
+                return (
+                  <li className="nav-item" key={menu.id}>
+                    <NavLink className="nav-link px-3" to={menu.url || "#"} end={menu.url === "/"}>
+                      {content}
+                    </NavLink>
+                  </li>
+                );
+              })
+            ) : (
+              <>
+                <li className="nav-item">
+                  <NavLink className="nav-link px-3" to="/" end>
+                    <i className="bi bi-house-door me-2"></i>Home
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink className="nav-link px-3" to="/projects">
+                    <i className="bi bi-code-square me-2"></i>Projects
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink className="nav-link px-3" to="/blog">
+                    <i className="bi bi-journal-text me-2"></i>Blog
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink className="nav-link px-3" to="/about">
+                    <i className="bi bi-person me-2"></i>About
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink className="nav-link px-3" to="/contact">
+                    <i className="bi bi-envelope me-2"></i>Contact
+                  </NavLink>
+                </li>
+                {isAdmin && (
+                  <li className="nav-item">
+                    <NavLink className="nav-link px-3" to="/admin/dashboard">
+                      <i className="bi bi-speedometer2 me-2"></i>Admin
+                    </NavLink>
+                  </li>
+                )}
+              </>
             )}
           </ul>
 

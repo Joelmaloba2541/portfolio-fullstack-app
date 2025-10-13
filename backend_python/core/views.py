@@ -3,7 +3,9 @@ from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from django.contrib.auth import login, logout
 from django.db.models import Count
-from .models import User, Post, Project, Comment, Like, Contact, OnlineUser, PostView, ActivityLog
+from django.utils import timezone
+from datetime import timedelta
+from .models import User, Post, Project, Comment, Like, Contact, OnlineUser, PostView, ActivityLog, Menu
 from .serializers import (
     UserSerializer, RegisterSerializer, LoginSerializer,
     PostSerializer, ProjectSerializer, CommentSerializer,
@@ -20,7 +22,7 @@ def register_view(request):
         user = serializer.save()
         return Response({
             'status': 'success',
-            'message': 'User registered successfully',
+            'message': 'Welcome aboard! Your account has been created successfully.',
             'user': UserSerializer(user).data
         }, status=status.HTTP_201_CREATED)
     return Response({
@@ -36,6 +38,15 @@ def login_view(request):
     if serializer.is_valid():
         user = serializer.validated_data
         login(request, user)
+
+        remember_me = request.data.get('remember_me')
+        if remember_me in ['true', 'True', True, '1']:
+            request.session.set_expiry(timedelta(days=30))
+        else:
+            request.session.set_expiry(0)
+
+        user.last_active = timezone.now()
+        user.save(update_fields=['last_active'])
         return Response({
             'status': 'success',
             'message': 'Login successful',
@@ -57,10 +68,23 @@ def logout_view(request):
     })
 
 
-@api_view(['GET'])
+@api_view(['GET', 'PUT', 'PATCH'])
 def current_user_view(request):
     """Get current logged-in user"""
     if request.user.is_authenticated:
+        if request.method in ['PUT', 'PATCH']:
+            serializer = UserSerializer(request.user, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    'status': 'success',
+                    'user': serializer.data
+                })
+            return Response({
+                'status': 'error',
+                'message': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
         return Response({
             'status': 'success',
             'user': UserSerializer(request.user).data
@@ -101,11 +125,7 @@ class PostViewSet(viewsets.ModelViewSet):
     
     def create(self, request):
         """Create a new post"""
-        data = request.data.copy()
-        if isinstance(data.get('tags'), list):
-            data['tags'] = ','.join(data['tags'])
-        
-        serializer = self.get_serializer(data=data)
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({
@@ -128,11 +148,7 @@ class PostViewSet(viewsets.ModelViewSet):
                 'message': 'Post not found'
             }, status=status.HTTP_404_NOT_FOUND)
         
-        data = request.data.copy()
-        if isinstance(data.get('tags'), list):
-            data['tags'] = ','.join(data['tags'])
-        
-        serializer = self.get_serializer(post, data=data, partial=True)
+        serializer = self.get_serializer(post, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response({
@@ -284,6 +300,14 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            ActivityLog.objects.create(
+                user=request.user if request.user.is_authenticated else None,
+                action='comment_created',
+                entity_type='comment',
+                entity_id=serializer.instance.id,
+                details=f"Comment on post {serializer.instance.post_id}",
+                ip_address=request.META.get('REMOTE_ADDR')
+            )
             return Response({
                 'status': 'success',
                 'message': 'Comment added successfully'
@@ -360,6 +384,23 @@ def online_users_view(request):
         'status': 'success',
         'data': serializer.data
     })
+
+
+@api_view(['GET'])
+def menu_view(request):
+    """Get active menus grouped by type."""
+    menus = Menu.objects.filter(is_active=True).order_by('menu_type', 'order', 'title')
+    grouped = {}
+    for menu in menus:
+        data = {
+            'id': menu.id,
+            'title': menu.title,
+            'url': menu.display_url,
+            'icon': menu.icon,
+            'parent': menu.parent_id,
+        }
+        grouped.setdefault(menu.menu_type, []).append(data)
+    return Response({'status': 'success', 'data': grouped})
 
 
 @api_view(['GET'])
