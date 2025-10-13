@@ -59,6 +59,56 @@ body {
   color: var(--bs-primary) !important;
 }
 
+/* Home marquee styles */
+.home-marquee {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.home-marquee__glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 50%, rgba(13, 110, 253, 0.25), transparent 55%),
+              radial-gradient(circle at 80% 50%, rgba(13, 202, 240, 0.2), transparent 60%);
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.marquee {
+  overflow: hidden;
+  position: relative;
+  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  gap: 3rem;
+  white-space: nowrap;
+  animation: marquee-scroll 18s linear infinite;
+}
+
+.marquee-item {
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0.85;
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.bg-opacity-15 {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
 /* Navbar styles */
 .navbar {
   transition: all 0.3s ease;

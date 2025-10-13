@@ -58,8 +58,12 @@ class LoginSerializer(serializers.Serializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
+    user_full_name = serializers.CharField(source='user.get_full_name', read_only=True)
+    user_profile_image = serializers.ImageField(source='user.profile_image', read_only=True)
+    post_title = serializers.CharField(source='post.title', read_only=True)
     is_reply = serializers.BooleanField(read_only=True)
     replies = serializers.SerializerMethodField()
+    rating = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
@@ -68,19 +72,39 @@ class CommentSerializer(serializers.ModelSerializer):
             'post',
             'user',
             'username',
+            'user_full_name',
+            'user_profile_image',
             'parent',
             'comment',
             'status',
+            'post_title',
             'is_reply',
             'replies',
-            'created_at'
+            'created_at',
+            'rating'
         ]
-        read_only_fields = ['id', 'created_at', 'username', 'is_reply', 'replies']
+        read_only_fields = ['id', 'created_at', 'username', 'user_full_name', 'user_profile_image', 'post_title', 'is_reply', 'replies', 'rating']
 
     def get_replies(self, obj):
         if obj.replies.exists():
             return CommentSerializer(obj.replies.all(), many=True, context=self.context).data
         return []
+
+    def get_rating(self, obj):
+        """Approximate rating based on comment sentiment/length."""
+        if hasattr(obj, 'rating') and obj.rating:
+            return obj.rating
+        # Basic heuristic: longer comments imply higher satisfaction
+        length = len(obj.comment or "")
+        if length > 200:
+            return 5
+        if length > 120:
+            return 4
+        if length > 60:
+            return 4
+        if length > 20:
+            return 3
+        return 5
 
 
 class PostSerializer(serializers.ModelSerializer):

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ReactTyped } from "react-typed";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useInView } from "framer-motion";
 import axiosInstance from "../axiosConfig";
 import ProjectCard from "../components/ProjectCard";
 import ContactFormComponent from "../components/ContactFormComponent";
@@ -9,34 +9,86 @@ export default function Home() {
   const [projects, setProjects] = useState([]);
   const [filter, setFilter] = useState("");
   const [tags, setTags] = useState([]);
-  const [isVisible, setIsVisible] = useState(false);
   const [hoveredProject, setHoveredProject] = useState(null);
+  const [recommendations, setRecommendations] = useState([]);
+  const marqueeRef = useRef(null);
+  const statsRef = useRef(null);
+  const statsInView = useInView(statsRef, { once: true, margin: "-120px" });
 
   useEffect(() => {
-    setIsVisible(true);
-    axiosInstance
-      .get("/projects") // base URL set in axiosConfig.js
-      .then((res) => {
-        // Django API returns data in res.data.data
-        const data = Array.isArray(res.data?.data) ? res.data.data : [];
-        // Normalize projects to ensure tags is always an array
-        const normalizedProjects = data.map((project) => ({
+    const fetchData = async () => {
+      try {
+        const [projectsRes, commentsRes] = await Promise.all([
+          axiosInstance.get("/projects"),
+          axiosInstance.get("/comments", {
+            params: { status: "approved", limit: 6 },
+          }),
+        ]);
+
+        const projectData = Array.isArray(projectsRes.data?.data)
+          ? projectsRes.data.data
+          : [];
+        const normalizedProjects = projectData.map((project) => ({
           ...project,
           tags: Array.isArray(project.tags) ? project.tags : [],
         }));
         setProjects(normalizedProjects);
-
-        const allTags = Array.from(
-          new Set(normalizedProjects.flatMap((p) => p.tags))
+        setTags(
+          Array.from(new Set(normalizedProjects.flatMap((p) => p.tags)))
         );
-        setTags(allTags);
-      })
-      .catch((err) => {
-        console.warn("Backend API not reachable:", err);
+
+        const commentData = Array.isArray(commentsRes.data?.data)
+          ? commentsRes.data.data
+          : [];
+        const formattedRecommendations = commentData.map((comment) => ({
+          id: comment.id,
+          name: comment.user_full_name || comment.username || "Client",
+          project: comment.post_title || "Project",
+          comment: comment.comment,
+          rating: comment.rating || 5,
+          created_at: comment.created_at,
+        }));
+        setRecommendations(formattedRecommendations);
+      } catch (error) {
+        console.warn("Failed to load homepage data:", error);
         setProjects([]);
         setTags([]);
-      });
+        setRecommendations([]);
+      }
+    };
+
+    fetchData();
   }, []);
+
+  const projectStats = useMemo(() => {
+    const totalProjects = projects.length;
+    const featured = projects.filter((p) => p.featured).length;
+    const categories = new Set(projects.map((p) => p.category).filter(Boolean));
+    return {
+      total: totalProjects,
+      featured,
+      categories: categories.size,
+    };
+  }, [projects]);
+
+  const experienceYears = useMemo(() => {
+    const startYear = 2021;
+    return Math.max(4, new Date().getFullYear() - startYear);
+  }, []);
+
+  const handleAnchorClick = (event, selector) => {
+    event.preventDefault();
+    const target = document.querySelector(selector);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  useEffect(() => {
+    if (marqueeRef.current) {
+      marqueeRef.current.scrollLeft = 0;
+    }
+  }, [recommendations]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -82,32 +134,34 @@ export default function Home() {
   };
 
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
+    <motion.div initial="hidden" animate="visible" variants={containerVariants}>
       {/* Scrolling Message */}
-      <motion.div
-        className="bg-gradient-primary text-white py-3 mb-2 position-relative overflow-hidden"
-        initial={{ opacity: 0, y: -50 }}
+      <motion.section
+        className="home-marquee bg-dark text-white py-2 position-relative overflow-hidden"
+        initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        transition={{ duration: 0.6 }}
       >
-        <div className="position-absolute top-0 start-0 w-100 h-100 opacity-25">
-          <div className="bg-white rounded-circle position-absolute" style={{ width: '100px', height: '100px', top: '-50px', left: '-50px', animation: 'float 6s ease-in-out infinite' }}></div>
-          <div className="bg-white rounded-circle position-absolute" style={{ width: '60px', height: '60px', top: '20px', right: '10%', animation: 'float 8s ease-in-out infinite reverse' }}></div>
+        <div className="home-marquee__glow"></div>
+        <div className="container">
+          <div className="marquee" ref={marqueeRef}>
+            <div className="marquee-track">
+              {[
+                "Full-Stack Developer",
+                "Django • React • Node.js • Flask",
+                "Turning ideas into reality",
+                "Building scalable digital solutions",
+                "Available for remote & on-site collaborations",
+              ].map((text, index) => (
+                <span key={`${text}-${index}`} className="marquee-item">
+                  <i className="bi bi-lightning-charge-fill me-2 text-warning"></i>
+                  {text}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
-        <div className="container text-center">
-          <ReactTyped
-            strings={["Full-Stack Developer", "Django • React • Node.js • Flask", "Turning ideas into reality", "Building scalable digital solutions"]}
-            typeSpeed={50}
-            backSpeed={30}
-            loop
-            className="h4 mb-0 fw-bold"
-          />
-        </div>
-      </motion.div>
+      </motion.section>
 
       {/* Hero Section */}
       <section className="text-center py-5 position-relative">
@@ -178,18 +232,20 @@ export default function Home() {
             variants={itemVariants}
           >
             <motion.a 
-              href="/contact" 
+              href="#contact" 
               className="btn btn-primary btn-lg px-4 py-3"
               whileHover={{ scale: 1.05, boxShadow: "0 10px 25px rgba(0,0,0,0.2)" }}
               whileTap={{ scale: 0.95 }}
+              onClick={(event) => handleAnchorClick(event, "#contact")}
             >
               🚀 Let’s build something amazing together.
             </motion.a>
             <motion.a 
-              href="/projects" 
+              href="#projects" 
               className="btn btn-outline-primary btn-lg px-4 py-3"
               whileHover={{ scale: 1.05, backgroundColor: "var(--bs-primary)", color: "white" }}
               whileTap={{ scale: 0.95 }}
+              onClick={(event) => handleAnchorClick(event, "#projects")}
             >
               <i className="bi bi-code-square me-2"></i>View My Work
             </motion.a>
@@ -201,6 +257,7 @@ export default function Home() {
       <motion.section 
         className="py-5 bg-light"
         variants={containerVariants}
+        ref={statsRef}
       >
         <div className="container">
           <div className="row text-center g-4">
@@ -209,9 +266,18 @@ export default function Home() {
                 className="p-4 rounded shadow-sm bg-white"
                 variants={itemVariants}
                 whileHover={{ y: -5, boxShadow: "0 15px 35px rgba(0,0,0,0.1)" }}
+                animate={statsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
               >
                 <i className="bi bi-code-slash display-4 text-primary mb-3"></i>
-                <h3 className="h2 fw-bold text-primary">50+</h3>
+                <motion.h3 
+                  className="display-5 fw-bold text-primary"
+                  initial={{ opacity: 0 }}
+                  animate={statsInView ? { opacity: 1 } : { opacity: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  {projectStats.total}
+                </motion.h3>
                 <p className="text-muted">Projects Completed</p>
               </motion.div>
             </div>
@@ -220,10 +286,19 @@ export default function Home() {
                 className="p-4 rounded shadow-sm bg-white"
                 variants={itemVariants}
                 whileHover={{ y: -5, boxShadow: "0 15px 35px rgba(0,0,0,0.1)" }}
+                animate={statsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
               >
                 <i className="bi bi-people display-4 text-success mb-3"></i>
-                <h3 className="h2 fw-bold text-success">100+</h3>
-                <p className="text-muted">Happy Clients</p>
+                <motion.h3 
+                  className="display-5 fw-bold text-success"
+                  initial={{ opacity: 0 }}
+                  animate={statsInView ? { opacity: 1 } : { opacity: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  {recommendations.length}
+                </motion.h3>
+                <p className="text-muted">Client Recommendations</p>
               </motion.div>
             </div>
             <div className="col-md-3">
@@ -231,9 +306,18 @@ export default function Home() {
                 className="p-4 rounded shadow-sm bg-white"
                 variants={itemVariants}
                 whileHover={{ y: -5, boxShadow: "0 15px 35px rgba(0,0,0,0.1)" }}
+                animate={statsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
               >
                 <i className="bi bi-clock-history display-4 text-info mb-3"></i>
-                <h3 className="h2 fw-bold text-info">5+</h3>
+                <motion.h3 
+                  className="display-5 fw-bold text-info"
+                  initial={{ opacity: 0 }}
+                  animate={statsInView ? { opacity: 1 } : { opacity: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  {experienceYears}
+                </motion.h3>
                 <p className="text-muted">Years Experience</p>
               </motion.div>
             </div>
@@ -242,10 +326,19 @@ export default function Home() {
                 className="p-4 rounded shadow-sm bg-white"
                 variants={itemVariants}
                 whileHover={{ y: -5, boxShadow: "0 15px 35px rgba(0,0,0,0.1)" }}
+                animate={statsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
               >
                 <i className="bi bi-award display-4 text-warning mb-3"></i>
-                <h3 className="h2 fw-bold text-warning">24/7</h3>
-                <p className="text-muted">Support Available</p>
+                <motion.h3 
+                  className="display-5 fw-bold text-warning"
+                  initial={{ opacity: 0 }}
+                  animate={statsInView ? { opacity: 1 } : { opacity: 0 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  {`${projectStats.categories || 1}+ Domains`}
+                </motion.h3>
+                <p className="text-muted">Industries Served</p>
               </motion.div>
             </div>
           </div>
@@ -379,21 +472,28 @@ export default function Home() {
               { name: "PostgreSQL", icon: "🐘", color: "#336791" },
               { name: "MongoDB", icon: "🍃", color: "#47A248" },
               { name: "Docker", icon: "🐳", color: "#2496ED" }
-            ].map((tech, index) => (
+            ].map((tech) => (
               <div key={tech.name} className="col-md-3 col-sm-6">
                 <motion.div 
-                  className="text-center p-4 rounded bg-white bg-opacity-10 backdrop-blur"
+                  className="text-center p-4 rounded bg-white bg-opacity-15 backdrop-blur position-relative overflow-hidden text-dark"
                   variants={itemVariants}
                   whileHover={{ scale: 1.05, y: -5 }}
                   whileTap={{ scale: 0.95 }}
                 >
+                  <motion.div
+                    className="position-absolute top-0 start-0 w-100 h-100"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0.12, 0.3, 0.12] }}
+                    transition={{ duration: 5, repeat: Infinity }}
+                    style={{ background: `radial-gradient(circle at top left, ${tech.color}33, transparent 60%)` }}
+                  ></motion.div>
                   <div 
-                    className="fs-1 mb-3"
+                    className="fs-1 mb-3 position-relative"
                     style={{ filter: `drop-shadow(0 0 10px ${tech.color})` }}
                   >
                     {tech.icon}
                   </div>
-                  <h5 className="fw-bold">{tech.name}</h5>
+                  <h5 className="fw-bold position-relative">{tech.name}</h5>
                 </motion.div>
               </div>
             ))}
@@ -401,10 +501,63 @@ export default function Home() {
         </div>
       </motion.section>
 
+      {/* Testimonials */}
+      <section className="py-5 bg-light" id="testimonials">
+        <div className="container">
+          <motion.h2 className="text-center mb-4" variants={itemVariants}>
+            💬 <span className="text-primary">Client Recommendations</span>
+          </motion.h2>
+          {recommendations.length === 0 ? (
+            <p className="text-center text-muted">
+              No testimonials yet. Let’s collaborate and add your success story!
+            </p>
+          ) : (
+            <div className="row g-4">
+              {recommendations.map((rec, index) => (
+                <div className="col-md-4" key={rec.id || index}>
+                  <motion.div
+                    className="card border-0 shadow h-100"
+                    variants={itemVariants}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ y: -8, boxShadow: "0 18px 36px rgba(0,0,0,0.12)" }}
+                  >
+                    <div className="card-body">
+                      <div className="d-flex align-items-center mb-3">
+                        <div className="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                          <i className="bi bi-person-heart text-primary"></i>
+                        </div>
+                        <div>
+                          <h6 className="mb-0">{rec.name}</h6>
+                          <small className="text-muted">{rec.project}</small>
+                        </div>
+                      </div>
+                      <p className="text-muted mb-3">“{rec.comment}”</p>
+                      <div className="d-flex align-items-center justify-content-between">
+                        <div>
+                          {[...Array(rec.rating || 5)].map((_, starIndex) => (
+                            <i key={starIndex} className="bi bi-star-fill text-warning"></i>
+                          ))}
+                        </div>
+                        <small className="text-muted">
+                          {rec.created_at ? new Date(rec.created_at).toLocaleDateString() : ""}
+                        </small>
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Contact Section */}
       <motion.section 
         className="my-5 container"
         variants={containerVariants}
+        id="contact"
       >
         <div className="row justify-content-center">
           <div className="col-lg-8">

@@ -282,13 +282,24 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     
     def list(self, request):
-        """Get comments for a post"""
+        """Get comments with optional filters"""
         post_id = request.query_params.get('post_id')
+        status_filter = request.query_params.get('status')
+        limit = request.query_params.get('limit')
+
+        comments = self.get_queryset().select_related('user', 'post').order_by('-created_at')
         if post_id:
-            comments = Comment.objects.filter(post_id=post_id)
-        else:
-            comments = self.get_queryset()
-        
+            comments = comments.filter(post_id=post_id)
+        if status_filter:
+            comments = comments.filter(status=status_filter)
+
+        if limit:
+            try:
+                limit_value = int(limit)
+                comments = comments[:limit_value]
+            except (TypeError, ValueError):
+                pass
+
         serializer = self.get_serializer(comments, many=True)
         return Response({
             'status': 'success',
