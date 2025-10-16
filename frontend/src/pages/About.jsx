@@ -27,7 +27,7 @@ export default function About() {
     {
       name: "LinkedIn",
       icon: "bi-linkedin",
-      url: "https://linkedin.com/in/joelmaloba",
+      url: "https://www.linkedin.com/in/joel-maloba-108146387/",
       color: "text-primary"
     },
     {

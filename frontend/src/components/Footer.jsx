@@ -24,7 +24,7 @@ function Footer() {
                    aria-label="GitHub Profile">
                   <i className="bi bi-github"></i>
                 </a>
-                <a href="https://linkedin.com/in/joelmaloba" 
+                <a href="https://www.linkedin.com/in/joel-maloba-108146387/" 
                    className="btn btn-outline-light btn-sm rounded-circle" 
                    target="_blank" rel="noopener noreferrer" 
                    aria-label="LinkedIn Profile">
@@ -132,18 +132,18 @@ function Footer() {
         <div className="row mt-5 py-4 border-top border-light">
           <div className="col-12 text-center">
             <p className="mb-1 text-white fw-semibold">
-              © 2025 Wanjala Joel Maloba Wangila<br />
+              2025 Wanjala Joel Maloba Wangila<br />
               All rights reserved.
             </p>
             <p className="mb-2 text-white-50">
-              🌍 Crafted with passion in Nairobi, Kenya.
+              Crafted with passion in Nairobi, Kenya.
             </p>
             <div className="d-flex justify-content-center gap-3 mb-2">
               <a href="https://github.com/Joelmaloba2541" className="text-white-50 text-decoration-none hover-white" target="_blank" rel="noopener noreferrer">
                 <i className="bi bi-github me-1"></i>GitHub
               </a>
               <span className="text-white-50">|</span>
-              <a href="https://linkedin.com/in/joelmaloba" className="text-white-50 text-decoration-none hover-white" target="_blank" rel="noopener noreferrer">
+              <a href="https://www.linkedin.com/in/joel-maloba-108146387/" className="text-white-50 text-decoration-none hover-white" target="_blank" rel="noopener noreferrer">
                 <i className="bi bi-linkedin me-1"></i>LinkedIn
               </a>
               <span className="text-white-50">|</span>

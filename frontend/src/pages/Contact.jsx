@@ -71,7 +71,7 @@ export default function Contact() {
                    aria-label="GitHub Profile">
                   <i className="bi bi-github"></i>
                 </a>
-                <a href="https://linkedin.com/in/joelmaloba" 
+                <a href="https://www.linkedin.com/in/joel-maloba-108146387/" 
                    className="btn btn-outline-primary rounded-circle p-2"
                    target="_blank"
                    rel="noopener noreferrer"
